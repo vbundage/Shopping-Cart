@@ -42,6 +42,19 @@ const App = () => {
     setAddFormQty("");
   };
 
+  const handleDelete = (ev) => {
+    ev.preventDefault();
+    // console.log(ev.currentTarget);
+    // console.log(ev.currentTarget.dataset.id);
+    let id = ev.currentTarget.dataset.id;
+    let endpoint = `http://localhost:5000/api/products/${id}`
+    axios.delete(endpoint)
+         .then(_ => {
+            setProducts(products.filter(product => product._id !== id));
+         })
+         .catch(err => console.log(err));
+  }; 
+
   const handleFormUpdate = (ev) => {
     switch (ev.target.id) {
       case "product-quantity":
@@ -66,7 +79,7 @@ const App = () => {
       </header>
 
       <main>
-        <Products products={products} />
+        <Products products={products} handleDelete={handleDelete} />
 
         {showAddForm ? (
           <Form formType="add"

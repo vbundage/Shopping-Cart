@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Form from "./Form";
 
-const Product = ({ id, title, quantity, price }) => {
+const Product = ({ _id, title, quantity, price, handleDelete }) => {
   const [showForm, setShowForm] = useState(false);
 
   const handleEditClick = () => {
@@ -24,7 +24,7 @@ const Product = ({ id, title, quantity, price }) => {
             </a>
           </div>
         )}
-        <a className="delete-button">
+        <a className="delete-button" onClick={handleDelete} data-id={_id} >
           <span>X</span>
         </a>
       </div>
