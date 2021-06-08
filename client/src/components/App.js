@@ -79,7 +79,7 @@ const App = () => {
       </header>
 
       <main>
-        <Products products={products} handleDelete={handleDelete} />
+        <Products products={products} handleDelete={handleDelete} setProducts={setProducts} />
 
         {showAddForm ? (
           <Form formType="add"
