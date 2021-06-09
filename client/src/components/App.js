@@ -1,105 +1,80 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-// import data from "../lib/data";
 import Cart from "./Cart";
 import Products from "./Products";
-import Form from "./Form";
 
 const App = () => {
-  const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [addFormTitle, setAddFormTitle] = useState("");
-  const [addFormPrice, setAddFormPrice] = useState("");
-  const [addFormQty, setAddFormQty] = useState("");
+  const [productsData, setProductsData] = useState([]);
 
   useEffect(() => {
     axios.get("http://localhost:5000/api/products")
          .then(res => res.data)
-         .then(data => setProducts(data))
+         .then(data => setProductsData(data))
          .catch(err => console.log(err))
   }, []);
 
-  const handleCancelClick = () => {
-    setShowAddForm(!showAddForm);
-  };
-
-  const handleFormSubmit = (ev) => {
-    ev.preventDefault();
-    let prodBody = {
-      title: addFormTitle,
-      price: parseFloat(addFormPrice),
-      quantity: Number(addFormQty),
-    };
-
-    axios.post("http://localhost:5000/api/products", prodBody)
-         .then(res => res.data)
-         .then(data => setProducts(products.concat(data)))
-         .catch(err => console.log(err));
-      
-    setAddFormTitle("");
-    setAddFormPrice("");
-    setAddFormQty("");
-  };
-
+  // EVENT HANDLERS
+  // for delete, not handled by form so need to prevent href default
   const handleDelete = (ev) => {
     ev.preventDefault();
-    // console.log(ev.currentTarget);
-    // console.log(ev.currentTarget.dataset.id);
     let id = ev.currentTarget.dataset.id;
-    let endpoint = `http://localhost:5000/api/products/${id}`
-    axios.delete(endpoint)
+    axios.delete(`/api/products/${id}`)
          .then(_ => {
-            setProducts(products.filter(product => product._id !== id));
+            setProductsData(
+              productsData
+                .filter(product => product._id !== id)
+            );
          })
          .catch(err => console.log(err));
-  }; 
+  };
 
-  const handleFormUpdate = (ev) => {
-    switch (ev.target.id) {
-      case "product-quantity":
-        setAddFormQty(ev.target.value);
-        break;
-      case "product-price":
-        setAddFormPrice(ev.target.value);
-        break;
-      case "product-name":
-        setAddFormTitle(ev.target.value);
-        break;
-    }
-    // console.log(ev.target);
-    // console.log("\nTITLE:", addFormTitle, "\nPRICE:", addFormPrice, "\nQTY:", addFormQty);
+  const handleEdit = (product) => {
+    console.log(product);
+    let requestBody = {
+      title: product.title,
+      price: parseFloat(product.price),
+      quantity: Number(product.quantity),
+    };
+
+    let productId = product._id;
+
+    axios.put(`/api/products/${productId}`, requestBody)
+         .then(res => res.data)
+         .then(data => {
+            setProductsData(
+              productsData.map(prod => {
+                if (prod._id === productId) {
+                  return data;
+                } else {
+                  return prod;
+                }
+              })
+            );
+         })
+         .catch(err => console.log(err));
+  };
+
+  const handleAdd = (body) => {
+    axios.post("/api/products", body)
+      .then(res => res.data)
+      .then(data => setProductsData(productsData.concat(data)))
+      .catch(err => console.log(err));
   };
 
   return (
     <div id="app">
       <header>
         <h1>The Shop!</h1>
-        <Cart items={cartItems} />
+        <Cart items={[]} />
       </header>
 
       <main>
-        <Products products={products} handleDelete={handleDelete} />
-
-        {showAddForm ? (
-          <Form formType="add"
-            title={addFormTitle}
-            price={addFormPrice}
-            quantity={addFormQty}
-            handleCancelClick={handleCancelClick}
-            handleFormUpdate={handleFormUpdate}
-            handleFormSubmit={handleFormSubmit}
-            />
-        ) : (
-          <p>
-            <a
-              className="button add-product-button"
-              onClick={handleCancelClick}
-            >
-              Add A Product
-            </a>
-          </p>
-        )}
+        <Products
+          data={productsData}
+          handleAdd={handleAdd}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
       </main>
     </div>
   );
