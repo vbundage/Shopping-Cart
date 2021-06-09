@@ -11,7 +11,7 @@ const Cart = ({ items }) => {
         <h2>Your Cart</h2>
         <p>Your cart is empty</p>
         <p>Total: $0</p>
-        <a className="button checkout disabled">Checkout</a>
+        <button className="button checkout disabled">Checkout</button>
       </div>
     );
   }
@@ -41,7 +41,7 @@ const Cart = ({ items }) => {
           </td>
         </tr>
       </table>
-      <a class="button checkout">Checkout</a>
+      <button class="button checkout">Checkout</button>
     </div>
   );
 };
