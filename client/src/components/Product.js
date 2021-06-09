@@ -1,44 +1,55 @@
 import React, { useState } from "react";
 import Form from "./Form";
 
-const Product = ({ _id, title, quantity, price, handleDelete }) => {
-  const [showForm, setShowForm] = useState(false);
+/**
+ * extracting this fragment to a component for readability
+ */
+const ProductActions = ({ onClick }) => {
+  return (
+    <div className="actions product-actions">
+      <button className="button add-to-cart">Add to Cart</button>
+      <button className="button edit" onClick={onClick}>Edit</button>
+    </div>
+  );
+};
 
-  const handleEditClick = () => {
-    setShowForm(!showForm);
+/**
+ * the Product component handles PUT updates
+ * to re-render only the single component instead
+ * of the entire list of products
+ */
+const Product = ({
+  product,
+  handleDelete = (_) => null,
+  handleEdit = (_) => null,
+}) => {
+  const [formHidden, setFormHidden] = useState(true);
+
+  const toggleForm = (ev) => {
+    ev.preventDefault();
+    setFormHidden(!formHidden);
   };
 
   return (
     <div className="product">
       <div className="product-details">
-        <h3>{title}</h3>
-        <p className="price">${price}</p>
-        <p className="quantity">{quantity} left in stock</p>
-        {showForm ? (
-          ""
-        ) : (
-          <div className="actions product-actions">
-            <a className="button add-to-cart">Add to Cart</a>
-            <a className="button edit" onClick={handleEditClick}>
-              Edit
-            </a>
-          </div>
-        )}
-        <a className="delete-button" onClick={handleDelete} data-id={_id} >
-          <span>X</span>
-        </a>
+        <h3>{product.title}</h3>
+        <p className="price">${product.price}</p>
+        <p className="quantity">{product.quantity} left in stock</p>
+        {formHidden ? <ProductActions onClick={toggleForm} /> : ""}
+        <button className="delete-button" onClick={handleDelete} data-id={product._id} >
+          X
+        </button>
       </div>
-      {showForm ? (
-        <Form
-          formType="edit"
-          title={title}
-          quantity={quantity}
-          price={price}
-          handleCancelClick={handleEditClick}
-        />
-      ) : (
-        ""
-      )}
+      {formHidden
+        ? ""
+        : <Form
+            type="edit"
+            title="Edit Product"
+            product={product}
+            handleCancelClick={toggleForm}
+            submitHandler={handleEdit}
+          />}
     </div>
   );
 };
