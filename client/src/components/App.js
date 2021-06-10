@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 import Cart from "./Cart";
 import Products from "./Products";
 
@@ -9,16 +9,18 @@ const App = () => {
 
   useEffect(() => {
     // product retrieval
-    axios.get("/api/products")
-         .then(res => res.data)
-         .then(data => setProductsData(data))
-         .catch(err => console.log(err));
+    axios
+      .get("/api/products")
+      .then((res) => res.data)
+      .then((data) => setProductsData(data))
+      .catch((err) => console.log(err));
 
     // cart retrieval
-    axios.get("/api/cart")
-         .then(res => res.data)
-         .then(data => setCartItems(data))
-         .catch(err => console.log(err));    
+    axios
+      .get("/api/cart")
+      .then((res) => res.data)
+      .then((data) => setCartItems(data))
+      .catch((err) => console.log(err));
   }, []);
 
   // EVENT HANDLERS
@@ -26,14 +28,12 @@ const App = () => {
   const handleDelete = (ev) => {
     ev.preventDefault();
     let id = ev.currentTarget.dataset.id;
-    axios.delete(`/api/products/${id}`)
-         .then(_ => {
-            setProductsData(
-              productsData
-                .filter(product => product._id !== id)
-            );
-         })
-         .catch(err => console.log(err));
+    axios
+      .delete(`/api/products/${id}`)
+      .then((_) => {
+        setProductsData(productsData.filter((product) => product._id !== id));
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleEdit = (product) => {
@@ -46,33 +46,35 @@ const App = () => {
 
     let productId = product._id;
 
-    axios.put(`/api/products/${productId}`, requestBody)
-         .then(res => res.data)
-         .then(data => {
-            setProductsData(
-              productsData.map(prod => {
-                if (prod._id === productId) {
-                  return data;
-                } else {
-                  return prod;
-                }
-              })
-            );
-         })
-         .catch(err => console.log(err));
+    axios
+      .put(`/api/products/${productId}`, requestBody)
+      .then((res) => res.data)
+      .then((data) => {
+        setProductsData(
+          productsData.map((prod) => {
+            if (prod._id === productId) {
+              return data;
+            } else {
+              return prod;
+            }
+          })
+        );
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleAddProduct = (body) => {
-    axios.post("/api/products", body)
-      .then(res => res.data)
-      .then(data => setProductsData(productsData.concat(data)))
-      .catch(err => console.log(err));
+    axios
+      .post("/api/products", body)
+      .then((res) => res.data)
+      .then((data) => setProductsData(productsData.concat(data)))
+      .catch((err) => console.log(err));
   };
 
   const handleAddToCart = (ev) => {
     ev.preventDefault();
     console.log(ev.target.value);
-    let product = productsData.find(p => p._id === ev.target.value);
+    let product = productsData.find((p) => p._id === ev.target.value);
 
     let body = {
       productId: product._id,
@@ -80,10 +82,25 @@ const App = () => {
       price: product.price,
     };
 
-    axios.post("/api/cart", body)
-      .then(res => res.data)
-      .then(data => setCartItems(cartItems.concat(data)))
-      .catch(err => console.log(err));
+    axios
+      .post("/api/cart", body)
+      .then((res) => res.data)
+      .then((data) => {
+        const existingItem = cartItems.find(
+          (item) => item.productId === data.productId
+        );
+
+        if (existingItem) {
+          const tempCartItems = [...cartItems].map((item) => {
+            if (item.productId === data.productId) return data;
+            return item;
+          });
+          setCartItems(tempCartItems);
+        } else {
+          setCartItems(cartItems.concat(data));
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (

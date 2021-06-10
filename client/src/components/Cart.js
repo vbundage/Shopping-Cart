@@ -3,7 +3,7 @@ import CartItem from "./CartItem";
 
 const Cart = ({ items }) => {
   const getTotal = () => {
-    return items.reduce((acc, item) => acc + (item.price * item.quantity));
+    return items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   };
 
   if (items.length === 0) {
@@ -20,20 +20,25 @@ const Cart = ({ items }) => {
     <div className="cart">
       <h2>Your Cart</h2>
       <table className="cart-items">
-        <tr>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Price</th>
-        </tr>
-        {items.map((item) => <CartItem {...item} key={`item${item._id}`} />)}
-        {/* TODO: Total calculation */}
-        <tr>
-          <td colspan="3" class="total">
-            Total: ${() => getTotal()}
-          </td>
-        </tr>
+        <tbody>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+          </tr>
+
+          {items.map((item) => (
+            <CartItem {...item} key={`item${item._id}`} />
+          ))}
+
+          <tr>
+            <td colSpan="3" className="total">
+              Total: ${getTotal()}
+            </td>
+          </tr>
+        </tbody>
       </table>
-      <button class="button checkout">Checkout</button>
+      <button className="button checkout">Checkout</button>
     </div>
   );
 };
