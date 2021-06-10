@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import CartItem from "./CartItem";
+import { cartItemsReceivedSuccess } from "../actions/cartAction"
 
 const Cart = ({ items }) => {
+  const dispatch = useDispatch()
+  const cart = useSelector(state => state.cartItems)
+  
   const getTotal = () => {
-    return items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    return cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   };
 
-  if (items.length === 0) {
+  useEffect(() => {
+    axios
+      .get("/api/cart")
+      .then((res) => res.data)
+      .then((data) => dispatch(cartItemsReceivedSuccess(data)))
+      .catch((err) => console.log(err));
+  }, [dispatch]);
+
+  if (cart.length === 0) {
     return (
       <div className="cart">
         <h2>Your Cart</h2>
@@ -16,6 +30,7 @@ const Cart = ({ items }) => {
       </div>
     );
   }
+
   return (
     <div className="cart">
       <h2>Your Cart</h2>
@@ -27,7 +42,7 @@ const Cart = ({ items }) => {
             <th>Price</th>
           </tr>
 
-          {items.map((item) => (
+          {cart.map((item) => (
             <CartItem {...item} key={`item${item._id}`} />
           ))}
 

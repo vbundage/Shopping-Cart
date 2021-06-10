@@ -1,5 +1,9 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import Form from "./Form";
+import { deleteProductSuccess } from "../actions/productAction"
+import { cartItemAddedSuccess } from "../actions/cartAction"
 
 /**
  * extracting this fragment to a component for readability
@@ -24,11 +28,38 @@ const ProductActions = ({
  */
 const Product = ({
   product,
-  handleDelete = (_) => null,
   handleEdit = (_) => null,
-  handleAddToCart = (_) => null,
 }) => {
   const [formHidden, setFormHidden] = useState(true);
+
+  const dispatch = useDispatch()
+  const products = useSelector(state => state.products)
+
+  const handleDelete = (ev) => {
+    ev.preventDefault();
+    let id = ev.currentTarget.dataset.id;
+    axios
+      .delete(`/api/products/${id}`)
+      .then((_) => {dispatch(deleteProductSuccess(id))})
+      .catch((err) => console.log(err));
+  };
+
+  const handleAddToCart = (ev) => {
+    ev.preventDefault();
+    let product = products.find((p) => p._id === ev.target.value);
+
+    let body = {
+      productId: product._id,
+      title: product.title,
+      price: product.price,
+    };
+
+    axios
+      .post("/api/cart", body)
+      .then((res) => res.data)
+      .then((data) => dispatch(cartItemAddedSuccess(data)))
+      .catch((err) => console.log(err));
+  };
 
   const toggleForm = (ev) => {
     ev.preventDefault();
