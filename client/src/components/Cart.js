@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import CartItem from "./CartItem";
-import { cartItemsReceivedSuccess } from "../actions/cartAction"
+import { cartItemsReceivedSuccess } from "../actions/cartAction";
 
-const Cart = ({ items }) => {
-  const dispatch = useDispatch()
-  const cart = useSelector(state => state.cartItems)
-  
+const Cart = () => {
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cartItems);
+
   const getTotal = () => {
     return cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   };
