@@ -1,8 +1,9 @@
 import React from "react";
+import CartItem from "./CartItem";
 
 const Cart = ({ items }) => {
   const getTotal = () => {
-    return items.reduce((acc, item) => acc + item.price);
+    return items.reduce((acc, item) => acc + (item.price * item.quantity));
   };
 
   if (items.length === 0) {
@@ -17,27 +18,18 @@ const Cart = ({ items }) => {
   }
   return (
     <div className="cart">
-      <table class="cart-items">
-        <h2>Your Cart</h2>
+      <h2>Your Cart</h2>
+      <table className="cart-items">
         <tr>
           <th>Item</th>
           <th>Quantity</th>
           <th>Price</th>
         </tr>
-        {items.map((item) => {
-          return (
-            <tr>
-              <td>{item.title}</td>
-              <td>{item.quantity}</td>
-              <td>${item.price}</td>
-            </tr>
-          );
-        })}
-
+        {items.map((item) => <CartItem {...item} key={`item${item._id}`} />)}
         {/* TODO: Total calculation */}
         <tr>
           <td colspan="3" class="total">
-            Total: ${getTotal()}
+            Total: ${() => getTotal()}
           </td>
         </tr>
       </table>

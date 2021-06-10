@@ -5,12 +5,20 @@ import Products from "./Products";
 
 const App = () => {
   const [productsData, setProductsData] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/products")
+    // product retrieval
+    axios.get("/api/products")
          .then(res => res.data)
          .then(data => setProductsData(data))
-         .catch(err => console.log(err))
+         .catch(err => console.log(err));
+
+    // cart retrieval
+    axios.get("/api/cart")
+         .then(res => res.data)
+         .then(data => setCartItems(data))
+         .catch(err => console.log(err));    
   }, []);
 
   // EVENT HANDLERS
@@ -54,10 +62,27 @@ const App = () => {
          .catch(err => console.log(err));
   };
 
-  const handleAdd = (body) => {
+  const handleAddProduct = (body) => {
     axios.post("/api/products", body)
       .then(res => res.data)
       .then(data => setProductsData(productsData.concat(data)))
+      .catch(err => console.log(err));
+  };
+
+  const handleAddToCart = (ev) => {
+    ev.preventDefault();
+    console.log(ev.target.value);
+    let product = productsData.find(p => p._id === ev.target.value);
+
+    let body = {
+      productId: product._id,
+      title: product.title,
+      price: product.price,
+    };
+
+    axios.post("/api/cart", body)
+      .then(res => res.data)
+      .then(data => setCartItems(cartItems.concat(data)))
       .catch(err => console.log(err));
   };
 
@@ -65,15 +90,16 @@ const App = () => {
     <div id="app">
       <header>
         <h1>The Shop!</h1>
-        <Cart items={[]} />
+        <Cart items={cartItems} />
       </header>
 
       <main>
         <Products
           data={productsData}
-          handleAdd={handleAdd}
+          handleAdd={handleAddProduct}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
+          handleAddToCart={handleAddToCart}
         />
       </main>
     </div>

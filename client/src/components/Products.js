@@ -7,6 +7,7 @@ const Products = ({
   handleAdd = (_) => null,
   handleEdit = (_) => null,
   handleDelete = (_) => null,
+  handleAddToCart = (_) => null,
 }) => {
   const [addFormHidden, setAddFormHidden] = useState(true);
 
@@ -24,6 +25,7 @@ const Products = ({
               product={product}
               handleEdit={handleEdit}
               handleDelete={handleDelete}
+              handleAddToCart={handleAddToCart}
             />
           })}
       </div>

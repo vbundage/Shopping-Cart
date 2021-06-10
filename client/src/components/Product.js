@@ -4,11 +4,15 @@ import Form from "./Form";
 /**
  * extracting this fragment to a component for readability
  */
-const ProductActions = ({ onClick }) => {
+const ProductActions = ({
+  showForm = (_) => null,
+  handleAddToCart = (_) => null,
+  productId,
+}) => {
   return (
     <div className="actions product-actions">
-      <button className="button add-to-cart">Add to Cart</button>
-      <button className="button edit" onClick={onClick}>Edit</button>
+      <button className="button add-to-cart" value={productId} onClick={handleAddToCart}>Add to Cart</button>
+      <button className="button edit" onClick={showForm}>Edit</button>
     </div>
   );
 };
@@ -22,6 +26,7 @@ const Product = ({
   product,
   handleDelete = (_) => null,
   handleEdit = (_) => null,
+  handleAddToCart = (_) => null,
 }) => {
   const [formHidden, setFormHidden] = useState(true);
 
@@ -36,7 +41,7 @@ const Product = ({
         <h3>{product.title}</h3>
         <p className="price">${product.price}</p>
         <p className="quantity">{product.quantity} left in stock</p>
-        {formHidden ? <ProductActions onClick={toggleForm} /> : ""}
+        {formHidden ? <ProductActions productId={product._id} showForm={toggleForm} handleAddToCart={handleAddToCart} /> : ""}
         <button className="delete-button" onClick={handleDelete} data-id={product._id} >
           X
         </button>
