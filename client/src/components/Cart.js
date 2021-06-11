@@ -4,6 +4,7 @@ import CartItem from "./CartItem";
 import { cartItemsReceived } from "../actions/cartAction";
 
 const Cart = () => {
+  console.log("Hello from cart! For git testing");
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cartItems);
 
