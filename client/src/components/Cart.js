@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import CartItem from "./CartItem";
-import { cartItemsReceivedSuccess } from "../actions/cartAction";
+import { cartItemsReceived } from "../actions/cartAction";
 
 const Cart = () => {
+  console.log("Hello from cart! For git testing");
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cartItems);
 
@@ -13,11 +13,7 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    axios
-      .get("/api/cart")
-      .then((res) => res.data)
-      .then((data) => dispatch(cartItemsReceivedSuccess(data)))
-      .catch((err) => console.log(err));
+    dispatch(cartItemsReceived());
   }, [dispatch]);
 
   if (cart.length === 0) {
