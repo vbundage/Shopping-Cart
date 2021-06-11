@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import Form from "./Form";
-import { deleteProductSuccess } from "../actions/productAction"
-import { cartItemAddedSuccess } from "../actions/cartAction"
+import {
+  deleteProductSuccess,
+  editProductSuccess,
+} from "../actions/productAction";
+import { cartItemAddedSuccess } from "../actions/cartAction";
 
 /**
  * extracting this fragment to a component for readability
@@ -15,8 +18,16 @@ const ProductActions = ({
 }) => {
   return (
     <div className="actions product-actions">
-      <button className="button add-to-cart" value={productId} onClick={handleAddToCart}>Add to Cart</button>
-      <button className="button edit" onClick={showForm}>Edit</button>
+      <button
+        className="button add-to-cart"
+        value={productId}
+        onClick={handleAddToCart}
+      >
+        Add to Cart
+      </button>
+      <button className="button edit" onClick={showForm}>
+        Edit
+      </button>
     </div>
   );
 };
@@ -26,21 +37,20 @@ const ProductActions = ({
  * to re-render only the single component instead
  * of the entire list of products
  */
-const Product = ({
-  product,
-  handleEdit = (_) => null,
-}) => {
+const Product = ({ product }) => {
   const [formHidden, setFormHidden] = useState(true);
 
-  const dispatch = useDispatch()
-  const products = useSelector(state => state.products)
+  const dispatch = useDispatch();
+  const products = useSelector((state) => state.products);
 
   const handleDelete = (ev) => {
     ev.preventDefault();
     let id = ev.currentTarget.dataset.id;
     axios
       .delete(`/api/products/${id}`)
-      .then((_) => {dispatch(deleteProductSuccess(id))})
+      .then((_) => {
+        dispatch(deleteProductSuccess(id));
+      })
       .catch((err) => console.log(err));
   };
 
@@ -61,6 +71,22 @@ const Product = ({
       .catch((err) => console.log(err));
   };
 
+  const handleEdit = (product) => {
+    let requestBody = {
+      title: product.title,
+      price: parseFloat(product.price),
+      quantity: Number(product.quantity),
+    };
+
+    let productId = product._id;
+
+    axios
+      .put(`/api/products/${productId}`, requestBody)
+      .then((res) => res.data)
+      .then((data) => dispatch(editProductSuccess(data)))
+      .catch((err) => console.log(err));
+  };
+
   const toggleForm = (ev) => {
     ev.preventDefault();
     setFormHidden(!formHidden);
@@ -72,20 +98,34 @@ const Product = ({
         <h3>{product.title}</h3>
         <p className="price">${product.price}</p>
         <p className="quantity">{product.quantity} left in stock</p>
-        {formHidden ? <ProductActions productId={product._id} showForm={toggleForm} handleAddToCart={handleAddToCart} /> : ""}
-        <button className="delete-button" onClick={handleDelete} data-id={product._id} >
+        {formHidden ? (
+          <ProductActions
+            productId={product._id}
+            showForm={toggleForm}
+            handleAddToCart={handleAddToCart}
+          />
+        ) : (
+          ""
+        )}
+        <button
+          className="delete-button"
+          onClick={handleDelete}
+          data-id={product._id}
+        >
           X
         </button>
       </div>
-      {formHidden
-        ? ""
-        : <Form
-            type="edit"
-            title="Edit Product"
-            product={product}
-            handleCancelClick={toggleForm}
-            submitHandler={handleEdit}
-          />}
+      {formHidden ? (
+        ""
+      ) : (
+        <Form
+          type="edit"
+          title="Edit Product"
+          product={product}
+          handleCancelClick={toggleForm}
+          submitHandler={handleEdit}
+        />
+      )}
     </div>
   );
 };
