@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import Form from "./Form";
-import {
-  deleteProductSuccess,
-  editProductSuccess,
-} from "../actions/productAction";
-import { cartItemAddedSuccess } from "../actions/cartAction";
+import { deleteProduct, editProduct } from "../actions/productAction";
+import { cartItemAdded } from "../actions/cartAction";
 
 /**
  * extracting this fragment to a component for readability
@@ -46,12 +42,7 @@ const Product = ({ product }) => {
   const handleDelete = (ev) => {
     ev.preventDefault();
     let id = ev.currentTarget.dataset.id;
-    axios
-      .delete(`/api/products/${id}`)
-      .then((_) => {
-        dispatch(deleteProductSuccess(id));
-      })
-      .catch((err) => console.log(err));
+    dispatch(deleteProduct(id));
   };
 
   const handleAddToCart = (ev) => {
@@ -63,12 +54,7 @@ const Product = ({ product }) => {
       title: product.title,
       price: product.price,
     };
-
-    axios
-      .post("/api/cart", body)
-      .then((res) => res.data)
-      .then((data) => dispatch(cartItemAddedSuccess(data)))
-      .catch((err) => console.log(err));
+    dispatch(cartItemAdded(body));
   };
 
   const handleEdit = (product) => {
@@ -79,12 +65,7 @@ const Product = ({ product }) => {
     };
 
     let productId = product._id;
-
-    axios
-      .put(`/api/products/${productId}`, requestBody)
-      .then((res) => res.data)
-      .then((data) => dispatch(editProductSuccess(data)))
-      .catch((err) => console.log(err));
+    dispatch(editProduct(productId, requestBody));
   };
 
   const toggleForm = (ev) => {
